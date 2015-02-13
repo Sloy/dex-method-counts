@@ -30,6 +30,7 @@ import java.util.TreeMap;
 public class DexMethodCounts {
     private static final PrintStream out = System.out;
     public static int overallCount = 0;
+    private static NodePrinter nodePrinter = new NodeOutputPrinter(out);
 
     enum Filter {
         ALL,
@@ -37,22 +38,10 @@ public class DexMethodCounts {
         REFERENCED_ONLY
     }
 
-    private static class Node {
+    public static class Node {
         int count = 0;
         NavigableMap<String, Node> children = new TreeMap<String, Node>();
 
-        void output(String indent) {
-            if (indent.length() == 0) {
-                out.println("<root>: " + count);
-                overallCount += count;
-            }
-            indent += "    ";
-            for (String name : children.navigableKeySet()) {
-                Node child = children.get(name);
-                out.println(indent + name + ": " + child.count);
-                child.output(indent);
-            }
-        }
     }
 
     public static void generate(
@@ -86,7 +75,7 @@ public class DexMethodCounts {
             packageNode.count++;
         }
 
-        packageTree.output("");
+        nodePrinter.output(packageTree, "");
     }
 
     private static MethodRef[] getMethodRefs(DexData dexData, Filter filter) {
