@@ -1,4 +1,14 @@
 apply plugin: 'java'
+apply plugin: 'gradle-one-jar'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
+    }
+}
 
 // Match existing source structure
 sourceSets {
@@ -15,6 +25,10 @@ jar {
     manifest {
         attributes("Main-Class": "info.persistent.dex.Main")
     }
+}
+
+task awesomeFunJar(type: OneJar) {
+    mainClass = 'info.persistent.dex.Main'
 }
 
 repositories {
