@@ -27,14 +27,15 @@ import java.util.zip.ZipFile;
 public class DexCountApi {
     private static final String CLASSES_DEX = "classes.dex";
 
-    private final PrintStream out = System.out;
-    private NodeFormatter nodeFormatter = new TreeNodeFormatter(out);
+    private NodeFormatter nodeFormatter = new TreeNodeFormatter();
+    private ReportOutput reportOutput = new ConsoleReportOutput();
 
     void generateReport(Config config) {
         try {
             for (String fileName : collectFileNames(config.inputFileNames)) {
                 MethodCountNode methodCountTree = countMethodsFromFile(config, fileName);
-                nodeFormatter.output(methodCountTree);
+                String output = nodeFormatter.formatNodeTree(methodCountTree);
+                reportOutput.output(output);
             }
         } catch (IOException ioe) {
             if (ioe.getMessage() != null) {

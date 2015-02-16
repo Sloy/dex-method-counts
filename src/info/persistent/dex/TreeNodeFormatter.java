@@ -1,31 +1,29 @@
 package info.persistent.dex;
 
 
-import java.io.PrintStream;
-
 public class TreeNodeFormatter implements NodeFormatter {
 
-    private PrintStream out;
+    private StringBuilder stringBuilder;
 
-    public TreeNodeFormatter(PrintStream out) {
-        this.out = out;
+    public TreeNodeFormatter() {
+        this.stringBuilder = new StringBuilder();
     }
 
-
-    private void output(MethodCountNode node, String indent) {
+    private String formatNodeTree(MethodCountNode node, String indent) {
         if (indent.length() == 0) {
-            out.println("<root>: " + node.count);
+            stringBuilder.append("<root>: ").append(node.count).append("\n");
         }
         indent += "    ";
         for (String name : node.children.navigableKeySet()) {
             MethodCountNode child = node.children.get(name);
-            out.println(indent + name + ": " + child.count);
-            output(child, indent);
+            stringBuilder.append(indent).append(name).append(": ").append(child.count).append("\n");
+            formatNodeTree(child, indent);
         }
+        return stringBuilder.toString();
     }
 
     @Override
-    public void output(MethodCountNode node) {
-        output(node, "");
+    public String formatNodeTree(MethodCountNode node) {
+        return formatNodeTree(node, "");
     }
 }
