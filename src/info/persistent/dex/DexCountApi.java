@@ -16,6 +16,7 @@ package info.persistent.dex;
 
 import com.android.dexdeps.DexData;
 import com.android.dexdeps.DexDataException;
+import com.android.dexdeps.UsageException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,35 +29,18 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-public class DexCountMain {
+public class DexCountApi {
     private static final String CLASSES_DEX = "classes.dex";
 
-    private boolean includeClasses;
-    private String packageFilter;
-    private int maxDepth = Integer.MAX_VALUE;
-    private DexMethodCounts.Filter filter = DexMethodCounts.Filter.ALL;
-
-    /**
-     * Entry point.
-     */
-    public static void main(String[] args) {
-        DexCountMain dexCountMain = new DexCountMain();
-        dexCountMain.run(args);
-    }
-
-    /**
-     * Start things up.
-     */
-    void run(String[] args) {
+    void generateReport(Config config) {
         try {
-            String[] inputFileNames = parseArgs(args);
-            for (String fileName : collectFileNames(inputFileNames)) {
+            for (String fileName : collectFileNames(config.inputFileNames)) {
                 System.out.println("Processing " + fileName);
                 RandomAccessFile raf = openInputFile(fileName);
                 DexData dexData = new DexData(raf);
                 dexData.load();
                 DexMethodCounts.generate(
-                    dexData, includeClasses, packageFilter, maxDepth, filter);
+                        dexData, config.includeClasses, config.packageFilter, config.maxDepth, config.filter);
                 raf.close();
             }
             System.out.println("Overall method count: " + DexMethodCounts.overallCount);
@@ -165,41 +149,6 @@ public class DexCountMain {
         return raf;
     }
 
-    String[] parseArgs(String[] args) {
-        int idx;
-
-        for (idx = 0; idx < args.length; idx++) {
-            String arg = args[idx];
-
-            if (arg.equals("--") || !arg.startsWith("--")) {
-                break;
-            } else if (arg.equals("--include-classes")) {
-                includeClasses = true;
-            } else if (arg.startsWith("--package-filter=")) {
-                packageFilter = arg.substring(arg.indexOf('=') + 1);
-            } else if (arg.startsWith("--max-depth=")) {
-                maxDepth =
-                    Integer.parseInt(arg.substring(arg.indexOf('=') + 1));
-            } else if (arg.startsWith("--filter=")) {
-                filter = Enum.valueOf(
-                    DexMethodCounts.Filter.class,
-                    arg.substring(arg.indexOf('=') + 1).toUpperCase());
-            } else {
-                System.err.println("Unknown option '" + arg + "'");
-                throw new UsageException();
-            }
-        }
-
-        // We expect at least one more argument (file name).
-        int fileCount = args.length - idx;
-        if (fileCount == 0) {
-            throw new UsageException();
-        }
-        String[] inputFileNames = new String[fileCount];
-        System.arraycopy(args, idx, inputFileNames, 0, fileCount);
-        return inputFileNames;
-    }
-
     void usage() {
         System.err.print(
             "DEX per-package/class method counts v1.0\n" +
@@ -235,5 +184,4 @@ public class DexCountMain {
         return fileNames;
     }
 
-    private static class UsageException extends RuntimeException {}
 }
