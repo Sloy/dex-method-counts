@@ -30,7 +30,7 @@ import java.util.TreeMap;
 public class DexMethodCounts {
     private static final PrintStream out = System.out;
     public static int overallCount = 0;
-    private static NodePrinter nodePrinter = new NodeOutputPrinter(out);
+    private static NodePrinter nodePrinter = new NodeTreePrinter(out);
 
     enum Filter {
         ALL,
@@ -75,7 +75,7 @@ public class DexMethodCounts {
             packageNode.count++;
         }
 
-        nodePrinter.output(packageTree, "");
+        nodePrinter.output(packageTree);
     }
 
     private static MethodRef[] getMethodRefs(DexData dexData, Filter filter) {

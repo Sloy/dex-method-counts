@@ -3,16 +3,16 @@ package info.persistent.dex;
 
 import java.io.PrintStream;
 
-public class NodeOutputPrinter implements NodePrinter {
+public class NodeTreePrinter implements NodePrinter {
 
     private PrintStream out;
 
-    public NodeOutputPrinter(PrintStream out) {
+    public NodeTreePrinter(PrintStream out) {
         this.out = out;
     }
 
-    @Override
-    public void output(DexMethodCounts.Node node, String indent) {
+
+    private void output(DexMethodCounts.Node node, String indent) {
         if (indent.length() == 0) {
             out.println("<root>: " + node.count);
             DexMethodCounts.overallCount += node.count;
@@ -23,5 +23,10 @@ public class NodeOutputPrinter implements NodePrinter {
             out.println(indent + name + ": " + child.count);
             output(child, indent);
         }
+    }
+
+    @Override
+    public void output(DexMethodCounts.Node node) {
+        output(node, "");
     }
 }

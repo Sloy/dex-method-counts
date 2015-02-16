@@ -28,7 +28,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-public class Main {
+public class DexCountMain {
     private static final String CLASSES_DEX = "classes.dex";
 
     private boolean includeClasses;
@@ -40,8 +40,8 @@ public class Main {
      * Entry point.
      */
     public static void main(String[] args) {
-        Main main = new Main();
-        main.run(args);
+        DexCountMain dexCountMain = new DexCountMain();
+        dexCountMain.run(args);
     }
 
     /**

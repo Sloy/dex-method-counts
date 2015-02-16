@@ -13,6 +13,14 @@ jar {
     // Redirect output to match launcher script
     destinationDir = file('build/jar')
     manifest {
-        attributes("Main-Class": "info.persistent.dex.Main")
+        attributes("Main-Class": "info.persistent.dex.DexCountMain")
     }
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'com.google.code.gson:gson:2.3.1'
 }
