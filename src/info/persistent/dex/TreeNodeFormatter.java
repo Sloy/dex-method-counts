@@ -3,11 +3,11 @@ package info.persistent.dex;
 
 import java.io.PrintStream;
 
-public class NodeTreePrinter implements NodePrinter {
+public class TreeNodeFormatter implements NodeFormatter {
 
     private PrintStream out;
 
-    public NodeTreePrinter(PrintStream out) {
+    public TreeNodeFormatter(PrintStream out) {
         this.out = out;
     }
 

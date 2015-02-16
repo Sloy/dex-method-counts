@@ -1,5 +1,5 @@
 package info.persistent.dex;
 
-public interface NodePrinter {
+public interface NodeFormatter {
     void output(MethodCountNode node);
 }

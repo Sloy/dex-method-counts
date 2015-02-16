@@ -4,12 +4,12 @@ import com.google.gson.Gson;
 
 import java.io.PrintStream;
 
-public class NodeJsonPrinter implements NodePrinter {
+public class JsonNodeFormatter implements NodeFormatter {
 
     private Gson jsonAdapter;
     private PrintStream out;
 
-    public NodeJsonPrinter(PrintStream out) {
+    public JsonNodeFormatter(PrintStream out) {
         this.out = out;
         jsonAdapter = new Gson();
     }

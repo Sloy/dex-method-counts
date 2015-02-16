@@ -28,13 +28,13 @@ public class DexCountApi {
     private static final String CLASSES_DEX = "classes.dex";
 
     private final PrintStream out = System.out;
-    private NodePrinter nodePrinter = new NodeTreePrinter(out);
+    private NodeFormatter nodeFormatter = new TreeNodeFormatter(out);
 
     void generateReport(Config config) {
         try {
             for (String fileName : collectFileNames(config.inputFileNames)) {
                 MethodCountNode methodCountTree = countMethodsFromFile(config, fileName);
-                nodePrinter.output(methodCountTree);
+                nodeFormatter.output(methodCountTree);
             }
         } catch (IOException ioe) {
             if (ioe.getMessage() != null) {
