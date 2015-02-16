@@ -28,7 +28,7 @@ public class DexCountApi {
     private static final String CLASSES_DEX = "classes.dex";
 
     private NodeFormatter nodeFormatter = new TreeNodeFormatter();
-    private ReportOutput reportOutput = new ConsoleReportOutput();
+    private ReportOutput reportOutput = new FileReportOutput();
 
     void generateReport(Config config) {
         try {
