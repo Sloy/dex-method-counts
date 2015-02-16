@@ -15,7 +15,7 @@ public class NodeJsonPrinter implements NodePrinter {
     }
 
     @Override
-    public void output(DexMethodCounts.Node node) {
+    public void output(MethodCountNode node) {
         String result = jsonAdapter.toJson(node);
         out.print(result);
     }

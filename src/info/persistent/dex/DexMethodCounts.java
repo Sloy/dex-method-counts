@@ -23,13 +23,10 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NavigableMap;
 import java.util.Set;
-import java.util.TreeMap;
 
 public class DexMethodCounts {
-    private final PrintStream out = System.out;
-    private NodePrinter nodePrinter = new NodeTreePrinter(out);
+    private final PrintStream log = System.out;
 
     enum Filter {
         ALL,
@@ -37,17 +34,11 @@ public class DexMethodCounts {
         REFERENCED_ONLY
     }
 
-    public static class Node {
-        int count = 0;
-        NavigableMap<String, Node> children = new TreeMap<String, Node>();
-
-    }
-
-    public void generate(
+    public MethodCountNode generate(
             DexData dexData, boolean includeClasses, String packageFilter,
             int maxDepth, Filter filter) {
         MethodRef[] methodRefs = getMethodRefs(dexData, filter);
-        Node packageTree = new Node();
+        MethodCountNode packageTree = new MethodCountNode();
 
         for (MethodRef methodRef : methodRefs) {
             String classDescriptor = methodRef.getDeclClassName();
@@ -59,42 +50,41 @@ public class DexMethodCounts {
                 continue;
             }
             String packageNamePieces[] = packageName.split("\\.");
-            Node packageNode = packageTree;
+            MethodCountNode packageNode = packageTree;
             for (int i = 0; i < packageNamePieces.length && i < maxDepth; i++) {
                 packageNode.count++;
                 String name = packageNamePieces[i];
                 if (packageNode.children.containsKey(name)) {
                     packageNode = packageNode.children.get(name);
                 } else {
-                    Node childPackageNode = new Node();
+                    MethodCountNode childPackageNode = new MethodCountNode();
                     packageNode.children.put(name, childPackageNode);
                     packageNode = childPackageNode;
                 }
             }
             packageNode.count++;
         }
-
-        nodePrinter.output(packageTree);
+        return packageTree;
     }
 
     private MethodRef[] getMethodRefs(DexData dexData, Filter filter) {
         MethodRef[] methodRefs = dexData.getMethodRefs();
-        out.println("Read in " + methodRefs.length + " method IDs.");
+        log.println("Read in " + methodRefs.length + " method IDs.");
         if (filter == Filter.ALL) {
             return methodRefs;
         }
 
         ClassRef[] externalClassRefs = dexData.getExternalReferences();
-        out.println("Read in " + externalClassRefs.length +
-            " external class references.");
+        log.println("Read in " + externalClassRefs.length +
+                " external class references.");
         Set<MethodRef> externalMethodRefs = new HashSet<MethodRef>();
         for (ClassRef classRef : externalClassRefs) {
             for (MethodRef methodRef : classRef.getMethodArray()) {
                 externalMethodRefs.add(methodRef);
             }
         }
-        out.println("Read in " + externalMethodRefs.size() +
-            " external method references.");
+        log.println("Read in " + externalMethodRefs.size() +
+                " external method references.");
         List<MethodRef> filteredMethodRefs = new ArrayList<MethodRef>();
         for (MethodRef methodRef : methodRefs) {
             boolean isExternal = externalMethodRefs.contains(methodRef);
@@ -103,9 +93,9 @@ public class DexMethodCounts {
                 filteredMethodRefs.add(methodRef);
             }
         }
-        out.println("Filtered to " + filteredMethodRefs.size() + " " +
-            (filter == Filter.DEFINED_ONLY ? "defined" : "referenced") +
-            " method IDs.");
+        log.println("Filtered to " + filteredMethodRefs.size() + " " +
+                (filter == Filter.DEFINED_ONLY ? "defined" : "referenced") +
+                " method IDs.");
         return filteredMethodRefs.toArray(
             new MethodRef[filteredMethodRefs.size()]);
     }

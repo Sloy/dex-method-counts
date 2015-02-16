@@ -17,11 +17,7 @@ package info.persistent.dex;
 import com.android.dexdeps.DexData;
 import com.android.dexdeps.DexDataException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -31,10 +27,14 @@ import java.util.zip.ZipFile;
 public class DexCountApi {
     private static final String CLASSES_DEX = "classes.dex";
 
+    private final PrintStream out = System.out;
+    private NodePrinter nodePrinter = new NodeTreePrinter(out);
+
     void generateReport(Config config) {
         try {
             for (String fileName : collectFileNames(config.inputFileNames)) {
-                countMethodsFromFile(config, fileName);
+                MethodCountNode methodCountTree = countMethodsFromFile(config, fileName);
+                nodePrinter.output(methodCountTree);
             }
         } catch (IOException ioe) {
             if (ioe.getMessage() != null) {
@@ -47,7 +47,7 @@ public class DexCountApi {
         }
     }
 
-    private void countMethodsFromFile(Config config, String fileName) throws IOException {
+    private MethodCountNode countMethodsFromFile(Config config, String fileName) throws IOException {
         System.out.println("Processing " + fileName);
         RandomAccessFile raf = openInputFile(fileName);
 
@@ -55,10 +55,11 @@ public class DexCountApi {
         dexData.load();
 
         DexMethodCounts dexMethodCounts = new DexMethodCounts();
-        dexMethodCounts.generate(
+        MethodCountNode methodCountTree = dexMethodCounts.generate(
                 dexData, config.includeClasses, config.packageFilter, config.maxDepth, config.filter);
 
         raf.close();
+        return methodCountTree;
     }
 
     /**

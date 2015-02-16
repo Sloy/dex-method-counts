@@ -12,20 +12,20 @@ public class NodeTreePrinter implements NodePrinter {
     }
 
 
-    private void output(DexMethodCounts.Node node, String indent) {
+    private void output(MethodCountNode node, String indent) {
         if (indent.length() == 0) {
             out.println("<root>: " + node.count);
         }
         indent += "    ";
         for (String name : node.children.navigableKeySet()) {
-            DexMethodCounts.Node child = node.children.get(name);
+            MethodCountNode child = node.children.get(name);
             out.println(indent + name + ": " + child.count);
             output(child, indent);
         }
     }
 
     @Override
-    public void output(DexMethodCounts.Node node) {
+    public void output(MethodCountNode node) {
         output(node, "");
     }
 }

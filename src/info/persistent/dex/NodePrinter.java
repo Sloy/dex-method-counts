@@ -1,5 +1,5 @@
 package info.persistent.dex;
 
 public interface NodePrinter {
-    void output(DexMethodCounts.Node node);
+    void output(MethodCountNode node);
 }
