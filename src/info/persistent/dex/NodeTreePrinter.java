@@ -15,7 +15,6 @@ public class NodeTreePrinter implements NodePrinter {
     private void output(DexMethodCounts.Node node, String indent) {
         if (indent.length() == 0) {
             out.println("<root>: " + node.count);
-            DexMethodCounts.overallCount += node.count;
         }
         indent += "    ";
         for (String name : node.children.navigableKeySet()) {

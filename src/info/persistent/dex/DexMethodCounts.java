@@ -28,9 +28,8 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class DexMethodCounts {
-    private static final PrintStream out = System.out;
-    public static int overallCount = 0;
-    private static NodePrinter nodePrinter = new NodeTreePrinter(out);
+    private final PrintStream out = System.out;
+    private NodePrinter nodePrinter = new NodeTreePrinter(out);
 
     enum Filter {
         ALL,
@@ -44,7 +43,7 @@ public class DexMethodCounts {
 
     }
 
-    public static void generate(
+    public void generate(
             DexData dexData, boolean includeClasses, String packageFilter,
             int maxDepth, Filter filter) {
         MethodRef[] methodRefs = getMethodRefs(dexData, filter);
@@ -78,7 +77,7 @@ public class DexMethodCounts {
         nodePrinter.output(packageTree);
     }
 
-    private static MethodRef[] getMethodRefs(DexData dexData, Filter filter) {
+    private MethodRef[] getMethodRefs(DexData dexData, Filter filter) {
         MethodRef[] methodRefs = dexData.getMethodRefs();
         out.println("Read in " + methodRefs.length + " method IDs.");
         if (filter == Filter.ALL) {

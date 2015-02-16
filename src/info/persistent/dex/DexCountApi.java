@@ -16,7 +16,6 @@ package info.persistent.dex;
 
 import com.android.dexdeps.DexData;
 import com.android.dexdeps.DexDataException;
-import com.android.dexdeps.UsageException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,18 +34,8 @@ public class DexCountApi {
     void generateReport(Config config) {
         try {
             for (String fileName : collectFileNames(config.inputFileNames)) {
-                System.out.println("Processing " + fileName);
-                RandomAccessFile raf = openInputFile(fileName);
-                DexData dexData = new DexData(raf);
-                dexData.load();
-                DexMethodCounts.generate(
-                        dexData, config.includeClasses, config.packageFilter, config.maxDepth, config.filter);
-                raf.close();
+                countMethodsFromFile(config, fileName);
             }
-            System.out.println("Overall method count: " + DexMethodCounts.overallCount);
-        } catch (UsageException ue) {
-            usage();
-            System.exit(2);
         } catch (IOException ioe) {
             if (ioe.getMessage() != null) {
                 System.err.println("Failed: " + ioe);
@@ -56,6 +45,20 @@ public class DexCountApi {
             /* a message was already reported, just bail quietly */
             System.exit(1);
         }
+    }
+
+    private void countMethodsFromFile(Config config, String fileName) throws IOException {
+        System.out.println("Processing " + fileName);
+        RandomAccessFile raf = openInputFile(fileName);
+
+        DexData dexData = new DexData(raf);
+        dexData.load();
+
+        DexMethodCounts dexMethodCounts = new DexMethodCounts();
+        dexMethodCounts.generate(
+                dexData, config.includeClasses, config.packageFilter, config.maxDepth, config.filter);
+
+        raf.close();
     }
 
     /**
@@ -147,17 +150,6 @@ public class DexCountApi {
         raf.seek(0);
 
         return raf;
-    }
-
-    void usage() {
-        System.err.print(
-            "DEX per-package/class method counts v1.0\n" +
-            "Usage: dex-method-counts [options] <file.{dex,apk,jar,directory}> ...\n" +
-            "Options:\n" +
-            "  --include-classes\n" +
-            "  --package-filter=com.foo.bar\n" +
-            "  --max-depth=N\n"
-        );
     }
 
     /**
