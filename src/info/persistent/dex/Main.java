@@ -21,7 +21,9 @@ public class Main {
                         "Options:\n" +
                         "  --include-classes\n" +
                         "  --package-filter=com.foo.bar\n" +
-                        "  --max-depth=N\n"
+                        "  --max-depth=N\n" +
+                        "  --format={tree|json}\n" +
+                        "  --output={cli|file}\n"
         );
     }
 
@@ -45,6 +47,10 @@ public class Main {
                 config.filter = Enum.valueOf(
                         DexMethodCounts.Filter.class,
                         arg.substring(arg.indexOf('=') + 1).toUpperCase());
+            }else if (arg.startsWith("--format=")) {
+                config.format = arg.substring(arg.indexOf('=') + 1);
+            }else if (arg.startsWith("--output=")) {
+                config.output = arg.substring(arg.indexOf('=') + 1);
             } else {
                 System.err.println("Unknown option '" + arg + "'");
                 throw new UsageException();

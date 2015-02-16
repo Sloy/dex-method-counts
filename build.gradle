@@ -13,7 +13,7 @@ jar {
     // Redirect output to match launcher script
     destinationDir = file('build/jar')
     manifest {
-        attributes("Main-Class": "info.persistent.dex.DexCountMain")
+        attributes("Main-Class": "info.persistent.dex.Main")
     }
 }
 

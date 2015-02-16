@@ -16,6 +16,7 @@ package info.persistent.dex;
 
 import com.android.dexdeps.DexData;
 import com.android.dexdeps.DexDataException;
+import com.android.dexdeps.UsageException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -27,10 +28,11 @@ import java.util.zip.ZipFile;
 public class DexCountApi {
     private static final String CLASSES_DEX = "classes.dex";
 
-    private NodeFormatter nodeFormatter = new TreeNodeFormatter();
-    private ReportOutput reportOutput = new FileReportOutput();
+    private NodeFormatter nodeFormatter;
+    private ReportOutput reportOutput;
 
     void generateReport(Config config) {
+        setupFormatAndOutput(config);
         try {
             for (String fileName : collectFileNames(config.inputFileNames)) {
                 MethodCountNode methodCountTree = countMethodsFromFile(config, fileName);
@@ -45,6 +47,37 @@ public class DexCountApi {
         } catch (DexDataException dde) {
             /* a message was already reported, just bail quietly */
             System.exit(1);
+        }
+    }
+
+    private void setupFormatAndOutput(Config config) {
+        setupFormat(config.format);
+        setupOutput(config.output);
+    }
+
+    private void setupOutput(String output) {
+        switch (output) {
+            case "cli":
+                reportOutput = new ConsoleReportOutput();
+                break;
+            case "file":
+                reportOutput = new FileReportOutput();
+                break;
+            default:
+                throw new UsageException();
+        }
+    }
+
+    private void setupFormat(String format) {
+        switch (format) {
+            case "tree":
+                nodeFormatter = new TreeNodeFormatter();
+                break;
+            case "json":
+                nodeFormatter = new JsonNodeFormatter();
+                break;
+            default:
+                throw new UsageException();
         }
     }
 
