@@ -10,6 +10,14 @@ buildscript {
     }
 }
 
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'com.google.code.gson:gson:2.3.1'
+}
+
 // Match existing source structure
 sourceSets {
     main {
@@ -20,21 +28,21 @@ sourceSets {
 }
 
 jar {
-    // Redirect output to match launcher script
+    // Temporary jar without dependencies
     destinationDir = file('build/jar')
+    archiveName = 'dex-method-counts-nodependencies.jar'
     manifest {
         attributes("Main-Class": "info.persistent.dex.Main")
     }
 }
 
-task awesomeFunJar(type: OneJar) {
+task assembleOneJar(type: OneJar) {
+    // Final jar with dependencies included in it
     mainClass = 'info.persistent.dex.Main'
+    archiveName = 'dex-method-counts.jar'
 }
 
-repositories {
-    jcenter()
-}
-
-dependencies {
-    compile 'com.google.code.gson:gson:2.3.1'
+// Append custom task to 'assemble'
+assemble.doLast{
+    tasks.assembleOneJar.execute()
 }
