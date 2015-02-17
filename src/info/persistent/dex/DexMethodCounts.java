@@ -54,17 +54,26 @@ public class DexMethodCounts {
             for (int i = 0; i < packageNamePieces.length && i < maxDepth; i++) {
                 packageNode.count++;
                 String name = packageNamePieces[i];
-                if (packageNode.children.containsKey(name)) {
-                    packageNode = packageNode.children.get(name);
-                } else {
-                    MethodCountNode childPackageNode = new MethodCountNode();
-                    packageNode.children.put(name, childPackageNode);
-                    packageNode = childPackageNode;
+                MethodCountNode childPackageNode = getNodeByName(packageNode.children, name);
+                if (childPackageNode == null) {
+                    childPackageNode = new MethodCountNode();
+                    childPackageNode.name = name;
+                    packageNode.children.add(childPackageNode);
                 }
+                packageNode = childPackageNode;
             }
             packageNode.count++;
         }
         return packageTree;
+    }
+
+    private MethodCountNode getNodeByName(List<MethodCountNode> nodes, String name) {
+        for (MethodCountNode node : nodes) {
+            if (node.name.equals(name)) {
+                return node;
+            }
+        }
+        return null;
     }
 
     private MethodRef[] getMethodRefs(DexData dexData, Filter filter) {

@@ -14,9 +14,8 @@ public class TreeNodeFormatter implements NodeFormatter {
             stringBuilder.append("<root>: ").append(node.count).append("\n");
         }
         indent += "    ";
-        for (String name : node.children.navigableKeySet()) {
-            MethodCountNode child = node.children.get(name);
-            stringBuilder.append(indent).append(name).append(": ").append(child.count).append("\n");
+        for (MethodCountNode child : node.children) {
+            stringBuilder.append(indent).append(child.name).append(": ").append(child.count).append("\n");
             formatNodeTree(child, indent);
         }
         return stringBuilder.toString();
