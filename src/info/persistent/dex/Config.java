@@ -5,15 +5,15 @@ public class Config {
     private static final String DEFAULT_OUTPUT = "cli";
     private static final String DEFAULT_FORMAT = "tree";
 
-    boolean includeClasses;
+    public boolean includeClasses;
 
-    String packageFilter;
+    public String packageFilter;
 
-    Integer maxDepth = Integer.MAX_VALUE;
+    public Integer maxDepth = Integer.MAX_VALUE;
 
-    DexMethodCounts.Filter filter = DexMethodCounts.Filter.ALL;
+    public DexMethodCounts.Filter filter = DexMethodCounts.Filter.ALL;
 
-    String format = DEFAULT_FORMAT;
+    public String format = DEFAULT_FORMAT;
 
-    String output = DEFAULT_OUTPUT;
+    public String output = DEFAULT_OUTPUT;
 }
