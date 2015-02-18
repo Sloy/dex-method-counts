@@ -42,7 +42,9 @@ public class DexCountApi {
         try {
             MethodCountNode methodCountTree = countMethodsFromFile(config, inputFileName);
             String output = nodeFormatter.formatNodeTree(methodCountTree);
-            reportOutput.output(output);
+            if (reportOutput != null) {
+                reportOutput.output(output);
+            }
             return output;
         } catch (IOException ioe) {
             if (ioe.getMessage() != null) {
@@ -68,6 +70,9 @@ public class DexCountApi {
                 break;
             case "file":
                 reportOutput = new FileReportOutput();
+                break;
+            case "none":
+                reportOutput = null;
                 break;
             default:
                 throw new UsageException();
