@@ -13,8 +13,6 @@ public class Config {
 
     DexMethodCounts.Filter filter = DexMethodCounts.Filter.ALL;
 
-    String[] inputFileNames;
-
     String format = DEFAULT_FORMAT;
 
     String output = DEFAULT_OUTPUT;

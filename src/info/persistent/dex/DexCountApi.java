@@ -31,14 +31,19 @@ public class DexCountApi {
     private NodeFormatter nodeFormatter;
     private ReportOutput reportOutput;
 
-    void generateReport(Config config) {
+    public void generateBulkReport(Config config, String[] inputFileNames) {
+        for (String fileName : collectFileNames(inputFileNames)) {
+            generateReport(config, fileName);
+        }
+    }
+
+    public String generateReport(Config config, String inputFileName) {
         setupFormatAndOutput(config);
         try {
-            for (String fileName : collectFileNames(config.inputFileNames)) {
-                MethodCountNode methodCountTree = countMethodsFromFile(config, fileName);
-                String output = nodeFormatter.formatNodeTree(methodCountTree);
-                reportOutput.output(output);
-            }
+            MethodCountNode methodCountTree = countMethodsFromFile(config, inputFileName);
+            String output = nodeFormatter.formatNodeTree(methodCountTree);
+            reportOutput.output(output);
+            return output;
         } catch (IOException ioe) {
             if (ioe.getMessage() != null) {
                 System.err.println("Failed: " + ioe);
@@ -48,6 +53,7 @@ public class DexCountApi {
             /* a message was already reported, just bail quietly */
             System.exit(1);
         }
+        return null;
     }
 
     private void setupFormatAndOutput(Config config) {

@@ -7,7 +7,8 @@ public class Main {
     public static void main(String[] args) {
         try {
             DexCountApi dexCountApi = new DexCountApi();
-            dexCountApi.generateReport(parseConfigFromArgs(args));
+            Args arguments = parseConfigFromArgs(args);
+            dexCountApi.generateBulkReport(arguments.config, arguments.inputFiles);
         } catch (UsageException ue) {
             usage();
             System.exit(2);
@@ -27,8 +28,10 @@ public class Main {
         );
     }
 
-    static Config parseConfigFromArgs(String[] args) {
+    static Args parseConfigFromArgs(String[] args) {
+        Args parsedArgs = new Args();
         Config config = new Config();
+        parsedArgs.config = config;
 
         int idx;
         for (idx = 0; idx < args.length; idx++) {
@@ -47,9 +50,9 @@ public class Main {
                 config.filter = Enum.valueOf(
                         DexMethodCounts.Filter.class,
                         arg.substring(arg.indexOf('=') + 1).toUpperCase());
-            }else if (arg.startsWith("--format=")) {
+            } else if (arg.startsWith("--format=")) {
                 config.format = arg.substring(arg.indexOf('=') + 1);
-            }else if (arg.startsWith("--output=")) {
+            } else if (arg.startsWith("--output=")) {
                 config.output = arg.substring(arg.indexOf('=') + 1);
             } else {
                 System.err.println("Unknown option '" + arg + "'");
@@ -62,8 +65,13 @@ public class Main {
         if (fileCount == 0) {
             throw new UsageException();
         }
-        config.inputFileNames = new String[fileCount];
-        System.arraycopy(args, idx, config.inputFileNames, 0, fileCount);
-        return config;
+        parsedArgs.inputFiles = new String[fileCount];
+        System.arraycopy(args, idx, parsedArgs.inputFiles, 0, fileCount);
+        return parsedArgs;
+    }
+
+    static class Args {
+        Config config;
+        String[] inputFiles;
     }
 }
